@@ -48,6 +48,10 @@ WHERE id = #{skuId} AND stock >= #{qty};
 
 受影响行数为 0 即库存不足，整单回滚。配合 Redis 预扣减扛热点 SKU（后续迭代）。
 
+已实现：`server/src/services/orderService.ts`（createOrder 单事务逐 SKU 条件更新扣减、
+价格快照、整单回滚；cancelOrder 状态校验后同事务回补库存），接口为
+`POST /api/orders`、`GET /api/orders`、`POST /api/orders/:id/cancel`，均走 JWT 鉴权。
+
 ## 幂等
 
 - 创建订单：前端传幂等键（或按 user_id + 幂等 token 唯一约束），重复提交只返回同一订单。
